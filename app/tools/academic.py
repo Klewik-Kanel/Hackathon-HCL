@@ -251,7 +251,9 @@ def check_placement_eligibility(ctx: ToolContext, assume_pass: list[str] | None 
     return ToolResult(tool="check_placement_eligibility", data={
         "active_backlogs_now": backlogs, "active_backlogs_after_assumptions": effective,
         "max_allowed": limit, "result": "ELIGIBLE" if eligible else "NOT_ELIGIBLE",
-        "note": "Companies may set their own CGPA cut-offs on top of this.",
+        "note": ("Under the placement policy, a final-year B.Tech student can drop up to this many "
+                 "active-backlog subjects (at most 8 credits) when placement CGPA is computed; each "
+                 "company also sets its own CGPA and backlog criteria."),
     }, rule_ids=[limit_rule.rule_id], assumptions=assumptions)
 
 
