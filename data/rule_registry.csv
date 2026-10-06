@@ -1,0 +1,20 @@
+rule_id,description,parameter,operator,value,scope_programmes,scope_batches,effective_from,effective_to,source_doc_id,source_section
+ATT-MIN-01,Minimum attendance in a subject to appear in MSE/ESE,min_attendance_pct,>=,75,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,11.2
+ATT-RELAX-DEAN-01,Relaxation the Dean (Academics) may allow for recorded reasons,max_relaxation_dean_pct,<=,10,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,11.3
+ATT-RELAX-COMM-01,Further relaxation on a committee's recommendation,max_relaxation_committee_pct,<=,5,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,11.4
+ATT-RELAX-COUNT-01,Maximum number of attendance relaxations during the programme,max_relaxations_per_programme,<=,2,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,11.5
+ATT-FLOOR-01,Attendance below which a student cannot appear even after relaxation,absolute_min_attendance_pct,>=,60,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,11.6
+PASS-ESE-01,Minimum end-semester score in each component to pass a course,min_ese_pct_per_component,>=,30,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,12.7
+EVAL-ESE-MAX-01,End-semester marks out of 100 for a theory course with tutorial,ese_max_marks_theory,=,50,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,8
+GRADE-D-ABS-01,Minimum marks for grade D under absolute grading,min_marks_grade_d_absolute,>=,35,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,9.5
+SUPP-EXAM-01,Supplementary examinations are not held,supplementary_exam_available,=,false,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,12.3
+SUMMER-MIN-01,Minimum registrations for a summer semester course to run,min_registrations_summer_semester,>=,10,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,12.5
+DEG-CREDITS-01,Credits needed for the B.Tech degree,min_credits_degree,>=,162,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,15.1
+DEG-CGPA-01,Minimum CGPA for the B.Tech degree,min_cgpa_degree,>=,5.00,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,15.1
+DIV-FIRST-01,Minimum CGPA for First Division,min_cgpa_first_division,>=,6.50,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,15.6
+DIV-DIST-01,Minimum CGPA for First Division with Distinction (all courses cleared in first attempt),min_cgpa_distinction,>=,8.00,B.Tech,ALL,2019-07-01,,NSUT-BTECH-REG-2019,15.5
+PLC-BACKLOG-01,Maximum active backlogs to sit placements (verify wording against the PDF),max_active_backlogs_placement,<=,2,ALL,ALL,2024-07-01,,NSUT-TNP-POL-2024,verify
+PLC-CAT-2024,Package threshold for the top (Dream) category for tech roles in LPA (verify against the PDF),top_category_threshold_tech_lpa,>=,13,ALL,ALL,2024-07-01,,NSUT-TNP-POL-2024,verify
+PLC-CAT-2020,Package threshold for the top (A+) category for tech roles in LPA (verify against the PDF),top_category_threshold_tech_lpa,>=,8,ALL,ALL,2020-07-01,2021-06-30,NSUT-TNP-POL-2020,4
+ATT-MIN-02,Minimum attendance from January 2027 (synthetic circular),min_attendance_pct,>=,80,B.Tech,ALL,2027-01-01,,ACAD-CIRC-2026-SYN,1.1
+ATT-MIN-FAQ,Department FAQ claim on attendance (synthetic; lower authority),min_attendance_pct,>=,65,B.Tech CSE,ALL,2026-09-15,,CSE-FAQ-2026-SYN,1.1
