@@ -1,8 +1,10 @@
 """Chat UI for the assistant. It only calls the API over HTTP, never the code
 directly, so what the judges see here is exactly what the API returns.
 
-Sidebar: who is logged in (X-Student-Id), the as-of date, system health,
-and a document upload box that calls POST /ingest.
+Sidebar: student login (POST /login -> token sent as "Authorization: Bearer"),
+first-login password change, the as-of date, system health, and a document
+upload box that calls POST /ingest. Passwords are never kept in the UI, only
+the token, and only for this browser tab.
 """
 
 from __future__ import annotations
@@ -23,14 +25,69 @@ TYPE_LABEL = {
     "refused": "Not allowed",
     "conflict_flagged": "Sources conflict",
 }
+# Plain icons instead of emoji (Material Symbols, built into Streamlit).
+USER_ICON = ":material/person:"
+BOT_ICON = ":material/school:"
 
-st.set_page_config(page_title="NSUT Student Assistant", page_icon="SSA", layout="wide")
+st.set_page_config(page_title="NSUT Student Assistant", layout="wide")
 st.title("NSUT Student Services Assistant")
 st.caption("Answers come only from official NSUT documents and your own records. Every fact is cited.")
 
+for key, default in (("token", None), ("me", None), ("history", [])):
+    st.session_state.setdefault(key, default)
+
+
+def _err(r: httpx.Response) -> str:
+    try:
+        return r.json().get("detail", r.text)
+    except ValueError:
+        return r.text
+
+
 with st.sidebar:
+    st.subheader("Student login")
+    me = st.session_state.me
+    if me is None:
+        with st.form("login"):
+            sid = st.text_input("Student ID", placeholder="e.g. S1002")
+            pw = st.text_input("Password", type="password")
+            if st.form_submit_button("Log in", use_container_width=True):
+                try:
+                    r = httpx.post(f"{API_URL}/login", json={"student_id": sid, "password": pw}, timeout=30)
+                except httpx.HTTPError as exc:
+                    st.error(f"API not reachable: {exc}")
+                else:
+                    if r.status_code == 200:
+                        st.session_state.token, st.session_state.me = r.json()["token"], r.json()
+                        st.session_state.history = []
+                        st.rerun()
+                    st.error(_err(r))
+        st.caption("Not logged in: you can still ask general policy questions.")
+    else:
+        st.success(f"Logged in as **{me['full_name']}** ({me['student_id']})")
+        if me.get("must_change_password"):
+            st.warning("You are using the starting password. Please set your own.")
+        with st.expander("Change password", expanded=bool(me.get("must_change_password"))):
+            with st.form("change_pw", clear_on_submit=True):
+                cur = st.text_input("Current password", type="password")
+                new = st.text_input("New password (min 8 characters)", type="password")
+                new2 = st.text_input("Repeat new password", type="password")
+                if st.form_submit_button("Update password"):
+                    if new != new2:
+                        st.error("The new passwords do not match.")
+                    else:
+                        r = httpx.post(f"{API_URL}/change-password", timeout=30, json={
+                            "student_id": me["student_id"], "password": cur, "new_password": new})
+                        if r.status_code == 200:
+                            st.session_state.token, st.session_state.me = r.json()["token"], r.json()
+                            st.rerun()
+                        st.error(_err(r))
+        if st.button("Log out", use_container_width=True):
+            st.session_state.token = st.session_state.me = None
+            st.session_state.history = []
+            st.rerun()
+
     st.subheader("Session")
-    student_id = st.text_input("Logged-in student ID", placeholder="e.g. S1002 (blank = not logged in)")
     as_of = st.date_input("As-of date", value=date.today(), help="Answer as if today were this date")
 
     st.subheader("System")
@@ -38,7 +95,7 @@ with st.sidebar:
         health = httpx.get(f"{API_URL}/health", timeout=10).json()
         for name in ("api", "vector_store", "sqlite", "llm"):
             ok = health.get(name, {}).get("status") == "ok"
-            st.write(("UP" if ok else "DOWN") + name)
+            st.markdown(f"{name}: " + (":green[**OK**]" if ok else ":red[**DOWN**]"))
         st.caption(f"Model: {health.get('llm', {}).get('model')} · chunks: "
                    f"{health.get('vector_store', {}).get('chunks')} · students: {health.get('sqlite', {}).get('students')}")
     except httpx.HTTPError:
@@ -57,31 +114,32 @@ with st.sidebar:
                            data={"metadata": meta_text}, timeout=300)
             (st.success if r.status_code == 200 else st.error)(r.json())
 
-if "history" not in st.session_state:
-    st.session_state.history = []
-
 for turn in st.session_state.history:
-    st.chat_message("user").write(turn["question"])
-    with st.chat_message("assistant"):
+    st.chat_message("user", avatar=USER_ICON).write(turn["question"])
+    with st.chat_message("assistant", avatar=BOT_ICON):
         st.write(turn["answer"])
 
 question = st.chat_input("Ask about attendance, exams, grades, placement…")
 if question:
-    st.chat_message("user").write(question)
-    headers = {"X-Student-Id": student_id.strip()} if student_id.strip() else {}
+    st.chat_message("user", avatar=USER_ICON).write(question)
+    headers = {"Authorization": f"Bearer {st.session_state.token}"} if st.session_state.token else {}
     body = {"question": question, "as_of_date": as_of.isoformat()}
-    with st.chat_message("assistant"):
+    with st.chat_message("assistant", avatar=BOT_ICON):
         try:
             with st.spinner("Checking the sources…"):
                 resp = httpx.post(f"{API_URL}/ask", json=body, headers=headers, timeout=300)
         except httpx.HTTPError as exc:
             st.error(f"Request failed: {exc}")
             st.stop()
+        if resp.status_code == 401 and st.session_state.token:
+            st.session_state.token = st.session_state.me = None
+            st.warning("Your session has expired. Please log in again.")
+            st.stop()
         if resp.status_code != 200:
-            st.warning(f"{resp.status_code}: {resp.text[:300]}")
+            st.warning(f"{resp.status_code}: {_err(resp)[:300]}")
             st.stop()
         data = resp.json()
-        st.caption(f"{TYPE_LABEL.get(data['answer_type'], data['answer_type'])} · trace `{data['trace_id']}`")
+        st.caption(f"Answer type: {TYPE_LABEL.get(data['answer_type'], data['answer_type'])} · trace `{data['trace_id']}`")
         st.write(data["answer"])
         if data.get("explanation"):
             st.info(data["explanation"])
