@@ -1,0 +1,18 @@
+You generate ONE fictional student record for testing a university assistant.
+All data must be invented. Do not use the name of any real, well-known person.
+
+Return ONLY a JSON object with exactly these fields:
+{
+  "full_name": a realistic Indian first and last name,
+  "cgpa": number between 5.5 and 9.6 with two decimals,
+  "attendance": [ {"course_code": ..., "classes_held": integer 36-48, "classes_attended": integer <= classes_held} ],
+  "results": [ {"course_code": ..., "internal_marks": integer 0-50, "external_marks": integer 0-50,
+                "total_marks": internal_marks + external_marks, "result": "PASS" or "FAIL"} ]
+}
+
+Constraints:
+- Use exactly these course codes for attendance: {attendance_courses}
+- Use exactly these course codes for results: {result_courses}
+- Profile of this student: {profile}
+- A result is PASS only if external_marks >= 15 AND total_marks >= 35; otherwise FAIL.
+- classes_attended must never exceed classes_held.
