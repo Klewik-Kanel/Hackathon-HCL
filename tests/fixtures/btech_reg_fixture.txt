@@ -1,0 +1,21 @@
+REGULATIONS FOR BACHELOR OF TECHNOLOGY (TEST FIXTURE)
+This file is a short paraphrase of the NSUT B.Tech Regulations 2019-I(A), used only by the automated tests
+when the real PDF is not available. Clause numbers and page breaks follow the real document.
+1. SHORT TITLE AND COMMENCEMENT.......................... 3
+11. ATTENDANCE AND DETENTION............................. 17
+11. ATTENDANCE AND DETENTION
+11.1. Students are expected to attend every lecture, tutorial and practical class scheduled for them.
+11.2. A student needs a minimum attendance of 75% of all classes held in a subject, including lectures, tutorials and practicals, up to the MSE/ESE to be eligible to appear in the MSE/ESE of that subject.
+11.3. The Dean Academics may relax the minimum attendance by up to 10% for recorded reasons, such as authorised activities or medical reasons. Documents must be given to the HoD within seven days of resuming studies.
+11.4. In exceptional cases the Dean Academics may relax attendance by up to a further 5% on the recommendation of a committee of the Dean Student Welfare, Dean of Faculty and HoD.
+11.5. Attendance relaxation may be granted at most 2 times during the programme.
+11.6. A student whose attendance is below 60% even after the relaxations in 11.3 and 11.4 cannot appear in the MSE/ESE.
+11.7. A student not allowed to appear in the ESE for shortage of attendance gets the FD grade and must register for the course again.
+12. PROMOTION AND PASSING A COURSE
+12.3. There shall be no supplementary examinations. A student who fails a course must register for it again in a later year or in a summer semester.
+12.5. A summer semester may be run for backlog courses that have 10 or more registrations.
+12.7. To pass a course, a student must score at least 30% marks separately in the ESE of the theory and practical components.
+15. RESULT, AWARD OF DEGREE AND MEDALS
+15.1. A student is eligible for the B.Tech degree after earning 162 or more credits with a minimum CGPA of 5.00.
+15.5. A student who clears all subjects in the first attempt in eight consecutive semesters with a CGPA of 8.00 or above is awarded First Division with Distinction.
+15.6. A student who clears all subjects within the maximum duration with a CGPA of at least 6.50 is awarded First Division.
