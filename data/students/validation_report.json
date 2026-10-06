@@ -1,0 +1,11 @@
+{
+  "rows": {
+    "students": 40,
+    "courses": 12,
+    "attendance": 80,
+    "results": 110
+  },
+  "errors": [],
+  "warnings": [],
+  "ok": true
+}

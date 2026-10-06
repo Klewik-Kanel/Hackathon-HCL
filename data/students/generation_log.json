@@ -1,0 +1,21 @@
+{
+  "model": "offline-deterministic",
+  "temperature": 0.0,
+  "prompt_file": "prompts/student_gen_v1.txt",
+  "llm_calls": 0,
+  "llm_errors_fixed": [],
+  "invalid_json_retries": 0,
+  "edge_cases": {
+    "S1001": "attendance exactly 75.00% in CS301",
+    "S1002": "attendance 74.36% in CS301, one class short of 75%",
+    "S1003": "attendance 58.97% in CS301, below the 60% floor",
+    "S1004": "70% in CS301 with both relaxations already used",
+    "S1005": "failed CS201: external 14/50 = 28%, one mark below 30%",
+    "S1006": "ABSENT in CS203",
+    "S1007": "DETAINED (FD) in CS201",
+    "S1008": "three active backlogs (CS201, CS203, CS301)",
+    "S1009": "CGPA exactly 5.00 (degree minimum)",
+    "S1010": "CGPA exactly 8.00 (distinction boundary)",
+    "S1011": "CGPA 7.99, just below distinction"
+  }
+}
