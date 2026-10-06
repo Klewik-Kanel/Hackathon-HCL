@@ -37,6 +37,10 @@ OVERLAP_CHARS = 200
 CLAUSE_RE = re.compile(r"^\s*(\d{1,2}(?:\.\d{1,2}){0,2})\.?\s+(\S.*)$")
 # Section titles in capitals: "11. ATTENDANCE AND DETENTION"
 SECTION_TITLE_RE = re.compile(r"^\s*(\d{1,2})\.\s+([A-Z][A-Z ,&/()'-]{3,})$")
+# Top-level clauses written as "7. Attendance and detention: ..." (Ordinance style).
+TITLED_CLAUSE_RE = re.compile(r"^\s*(\d{1,2})\.\s+([A-Z][A-Za-z ,'/&()-]{2,60}):")
+# Clauses written as "4) In case of an on-campus offer ..." (placement policy style).
+PAREN_CLAUSE_RE = re.compile(r"^\s*(\d{1,2})\)\s+(\S.*)$")
 # Table of contents lines end with dot leaders and a page number.
 TOC_RE = re.compile(r"\.{5,}\s*\d+\s*$")
 # Markdown headings in our synthetic documents: "## 1. Minimum attendance"
@@ -102,6 +106,7 @@ def chunk_clauses(pages: list[tuple[int, str]]) -> list[Chunk]:
             md = MD_HEADING_RE.match(line)
             title = SECTION_TITLE_RE.match(line)
             clause = CLAUSE_RE.match(line)
+            titled = TITLED_CLAUSE_RE.match(line) or PAREN_CLAUSE_RE.match(line)
             if md:
                 flush()
                 number, words = md.group(1), md.group(2).strip()
@@ -118,6 +123,9 @@ def chunk_clauses(pages: list[tuple[int, str]]) -> list[Chunk]:
             elif clause and "." in clause.group(1):
                 flush()
                 current = {"page": page_no, "section": clause.group(1), "lines": [line.strip()]}
+            elif titled:
+                flush()
+                current = {"page": page_no, "section": titled.group(1), "lines": [line.strip()]}
             else:
                 if current is None:
                     current = {"page": page_no, "section": f"p.{page_no}", "lines": []}

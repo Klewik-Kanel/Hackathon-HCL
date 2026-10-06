@@ -1,19 +1,23 @@
 # Data sources: where to get each document
 
-Save every file into `data/docs/` with **exactly** the file name below
-(the Source Register looks them up by name), then run
-`python scripts/bootstrap.py`.
+The five NSUT documents are already in `data/docs/` as text files
+(`.txt`, one form-feed per page, so page numbers match the original PDFs).
+They were extracted from the official PDFs below on 6 October 2026; the
+staff contact names and phone numbers on the last page of the 2024-25
+placement policy were left out. To use the PDFs themselves instead,
+download them, save them with the same name but `.pdf`, and change
+`file_name` in `data/source_register.csv`.
 
 Before using a file, check two things: you can select text in the PDF (it
 is not a scanned image), and it contains no student names or roll numbers.
 
-| Save as | Document | Where |
+| File | Document | Original PDF |
 | --- | --- | --- |
-| `NSUT-BTECH-REG-2019.pdf` | Regulations for B.Tech Programmes 2019-I(A), 23 pages | https://www.nsut.ac.in/en/act-statutes-ordinances → Regulations → "B.Tech Regulations" (Google Drive → Download) |
-| `NSUT-ORD-II-2019.pdf` | Ordinance-II for UG and PG programmes, revised 29.10.2019 | Same page → Regulations → "Ordinance for Undergraduate and Post-Graduate Programmes" |
-| `NSUT-TNP-POL-2024.pdf` | Training and Placement Policy 2024-25 | https://tnpnsut-files.s3.ap-south-1.amazonaws.com/Placement_Policy_2024_25_final_b6588b530d.pdf |
-| `NSUT-TNP-POL-2020.pdf` | Placement Policies 2020-21 (older version) | https://nsut.kartikbhalla.dev/downloads/placement-policy.pdf (unofficial host; noted in the register) |
-| `NSUT-ADM-CIRC-2025-164.pdf` | B.Tech first-semester schedule and fee circular, 23.07.2025 | https://cdnbbsr.s3waas.gov.in/s3e45823afe1e5120cec11fc4c379a0c67/uploads/2025/07/2025072696.pdf |
+| `NSUT-BTECH-REG-2019.txt` | Regulations for B.Tech Programmes 2019-I(A), 23 pages | https://www.nsut.ac.in/en/act-statutes-ordinances → Regulations → "B.Tech Regulations" (Google Drive → Download) |
+| `NSUT-ORD-II-2019.txt` | Ordinance-II for UG and PG programmes, revised 29.10.2019 | Same page → Regulations → "Ordinance for Undergraduate and Post-Graduate Programmes" |
+| `NSUT-TNP-POL-2024.txt` | Training and Placement Policy 2024-25 | https://tnpnsut-files.s3.ap-south-1.amazonaws.com/Placement_Policy_2024_25_final_b6588b530d.pdf |
+| `NSUT-TNP-POL-2020.txt` | Placement Policies 2020-21 (older version) | https://nsut.kartikbhalla.dev/downloads/placement-policy.pdf (unofficial host; noted in the register) |
+| `NSUT-ADM-CIRC-2025-164.txt` | B.Tech first-semester schedule and fee circular, 23.07.2025 | https://cdnbbsr.s3waas.gov.in/s3e45823afe1e5120cec11fc4c379a0c67/uploads/2025/07/2025072696.pdf |
 
 Already in the repo (synthetic, marked `synthetic: Y`):
 `ACAD-CIRC-2026-SYN.md` (80% attendance from 2027, supersedes clause 11.2)
