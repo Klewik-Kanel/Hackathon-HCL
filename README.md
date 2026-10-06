@@ -46,9 +46,7 @@ more agents would add latency and failure points, not capability.
 ollama serve                       # leave running
 ollama pull qwen2.5:7b-instruct
 
-# 2. Documents: download the PDFs listed in docs/DATA_SOURCES.md into data/docs/
-
-# 3. Start everything
+# 2. Start everything (documents are already in data/docs/)
 cp .env.example .env
 docker compose up --build
 docker compose exec api python scripts/bootstrap.py   # index docs, load rules and students
@@ -56,7 +54,19 @@ docker compose exec api python scripts/bootstrap.py   # index docs, load rules a
 
 - Chat UI: http://localhost:8501 · API docs: http://localhost:8000/docs · Health: http://localhost:8000/health
 
-Without Docker: see [docs/SETUP.md](docs/SETUP.md).
+Without Docker, one command: `bash scripts/run_local.sh` (installs, loads data, starts API + UI).
+Details: [docs/SETUP.md](docs/SETUP.md).
+
+
+## Student login
+
+Students sign in with their student ID and a password (sidebar of the chat UI, or `POST /login`).
+The API then takes the student from the signed token only, never from the question text.
+
+- First login: the starting password `nsut@123` (set `DEMO_PASSWORD` to change it); the UI then asks the student to choose their own.
+- Passwords are stored only as salted PBKDF2-SHA256 hashes; five wrong attempts lock that ID for five minutes.
+- General policy questions work without logging in; personal questions ask you to log in.
+- `REQUIRE_LOGIN=false` also accepts the brief's original `X-Student-Id` header (for scripted tests).
 
 ## Sample requests
 
