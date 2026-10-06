@@ -1,0 +1,40 @@
+# Starts the API and the UI. Ollama runs on the host machine (allowed by
+# the brief), so the model is not downloaded again inside Docker.
+#
+#   docker compose up --build      # first time
+#   docker compose up              # afterwards
+#
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    env_file:
+      - path: .env
+        required: false
+    environment:
+      # Inside a container, "localhost" is the container itself;
+      # host.docker.internal is the Mac/PC running Ollama.
+      OLLAMA_HOST: ${OLLAMA_HOST:-http://host.docker.internal:11434}
+      DATA_DIR: /srv/data
+    volumes:
+      # Chroma and SQLite live on the host disk, so a restart never
+      # re-ingests documents (brief section 5).
+      - ./data:/srv/data
+    extra_hosts:
+      # Makes host.docker.internal work on Linux too (built in on Mac/Windows).
+      - "host.docker.internal:host-gateway"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+
+  ui:
+    build: ./ui
+    ports:
+      - "8501:8501"
+    environment:
+      API_URL: http://api:8000
+    depends_on:
+      - api

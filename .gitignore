@@ -8,12 +8,13 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+.pytest_cache/
 
-# Node
-node_modules/
-dist/
-build/
-
-# Secrets
+# Secrets (keep the template)
 .env
 .env.*
+!.env.example
+
+# Runtime data (rebuilt by scripts; documents and CSVs stay tracked)
+data/chroma/
+data/*.db
