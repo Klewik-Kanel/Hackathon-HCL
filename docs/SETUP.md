@@ -69,14 +69,22 @@ return JSON.
    docker compose up --build
    ```
 
-4. **Check it works**
+4. **Load the data** (in a second terminal, once the API is up; re-run after adding documents):
+   ```bash
+   docker compose exec api python scripts/bootstrap.py
+   ```
+   It indexes every document in `data/docs/` (download them first:
+   [DATA_SOURCES.md](DATA_SOURCES.md)), loads the rule registry and the
+   40 synthetic students.
+
+5. **Check it works**
    - API health: open http://localhost:8000/health
      Every part should say `"status": "ok"`. If `llm` is `down`, Ollama is
      not running on the host or the model isn't pulled (Part 1).
    - API docs (try endpoints in the browser): http://localhost:8000/docs
    - Chat UI: http://localhost:8501
 
-5. **Stop**: `Ctrl+C`, or `docker compose down`. Data in `./data`
+6. **Stop**: `Ctrl+C`, or `docker compose down`. Data in `./data`
    (vector store, SQLite) is kept between runs.
 
 ### How the containers reach Ollama
@@ -97,14 +105,24 @@ Faster to iterate while coding:
 python3 -m venv .venv && source .venv/bin/activate
 pip install torch --index-url https://download.pytorch.org/whl/cpu
 pip install -r requirements.txt
+python scripts/bootstrap.py              # index docs, load rules + students (once)
 uvicorn app.main:app --reload            # API on :8000
+pip install -r ui/requirements.txt
 streamlit run ui/streamlit_app.py        # UI on :8501 (second terminal)
+```
+
+Regenerate the synthetic students with the real model (do this once on
+the demo laptop, then update docs/data_card.md):
+
+```bash
+python scripts/generate_students.py      # uses Ollama; --offline for no model
+python scripts/load_students.py
 ```
 
 Testing without the model at all:
 
 ```bash
-MOCK_LLM=true python -m pytest
+python -m pytest        # tests set MOCK_LLM and offline embeddings themselves
 ```
 
 ---
