@@ -20,6 +20,7 @@ os.environ.update({
     "EMBEDDING_MODEL": "hash",       # offline test embedder
     "ABSTAIN_THRESHOLD": "0.12",     # hash similarities are lower than real embeddings
     "EXTRACT_RULES_ON_INGEST": "true",
+    "REQUIRE_LOGIN": "false",        # older tests use the X-Student-Id header; test_auth.py turns it on
 })
 
 import pytest  # noqa: E402

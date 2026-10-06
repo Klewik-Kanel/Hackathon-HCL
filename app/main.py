@@ -2,7 +2,9 @@
 
 Endpoints
 ---------
-POST /ask                  ask a question (X-Student-Id header = logged-in student)
+POST /login                student ID + password -> sign-in token
+POST /change-password      set your own password (needed after the first login)
+POST /ask                  ask a question (Authorization: Bearer <token> = logged-in student)
 POST /ingest               add a document while running (file + metadata JSON)
 GET  /health               status of API, vector store, SQLite and LLM
 GET  /audit/{trace_id}     full audit record for one response
@@ -21,10 +23,11 @@ from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
-from fastapi import FastAPI, File, Form, Header, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, Header, HTTPException, Request, UploadFile
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel, ValidationError
 
-from app import audit, db, llm
+from app import audit, auth, db, llm
 from app.config import settings
 from app.models import AskRequest, AskResponse, IngestResponse, SourceMetadata
 
@@ -43,6 +46,11 @@ app = FastAPI(
     description="Grounded, cited answers from NSUT documents and student records.",
     lifespan=lifespan,
 )
+
+
+@app.exception_handler(auth.AuthError)
+def _auth_error(_: Request, exc: auth.AuthError) -> JSONResponse:
+    return JSONResponse(status_code=exc.status, content={"detail": exc.message})
 
 
 # --------------------------------------------------------------- health --
@@ -74,16 +82,40 @@ def health() -> dict:
         "llm": llm.health(),
     }
     overall = "ok" if all(p["status"] == "ok" for p in parts.values()) else "degraded"
-    return {"status": overall, **parts}
+    return {"status": overall, **parts, "login_required": auth.login_required()}
+
+
+# ---------------------------------------------------------------- login --
+class LoginRequest(BaseModel):
+    student_id: str
+    password: str
+
+
+class ChangePasswordRequest(LoginRequest):
+    new_password: str
+
+
+@app.post("/login")
+def login(body: LoginRequest) -> dict:
+    """Returns {token, student_id, full_name, expires_at, must_change_password}."""
+    return auth.login(body.student_id, body.password)
+
+
+@app.post("/change-password")
+def change_password(body: ChangePasswordRequest) -> dict:
+    auth.change_password(body.student_id, body.password, body.new_password)
+    return {"status": "ok", **auth.login(body.student_id, body.new_password)}
 
 
 # ------------------------------------------------------------------ ask --
 @app.post("/ask", response_model=AskResponse)
-def ask(body: AskRequest, x_student_id: str | None = Header(default=None)) -> AskResponse:
+def ask(body: AskRequest, authorization: str | None = Header(default=None),
+        x_student_id: str | None = Header(default=None)) -> AskResponse:
     from app.graph import answer_question  # heavy imports load on first use
 
+    student_id = auth.resolve_student(authorization, x_student_id)  # from the token, never the text
     as_of = body.as_of_date or datetime.now(IST).date()  # default: today in India
-    return answer_question(body.question, x_student_id, as_of)
+    return answer_question(body.question, student_id, as_of)
 
 
 # --------------------------------------------------------------- ingest --

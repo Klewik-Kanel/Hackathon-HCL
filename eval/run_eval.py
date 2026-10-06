@@ -25,6 +25,7 @@ import argparse
 import json
 import statistics
 import sys
+import os
 import time
 from pathlib import Path
 
@@ -56,10 +57,25 @@ def percentile(values: list[float], p: float) -> float:
     return values[k]
 
 
+_TOKENS: dict[str, str] = {}
+
+
+def student_headers(client, student_id: str | None) -> dict:
+    """Log in as the test student (demo password) and fall back to the header."""
+    if not student_id:
+        return {}
+    if student_id not in _TOKENS:
+        r = client.post("/login", json={"student_id": student_id,
+                                        "password": os.getenv("DEMO_PASSWORD", "nsut@123")})
+        _TOKENS[student_id] = r.json()["token"] if r.status_code == 200 else ""
+    token = _TOKENS[student_id]
+    return {"Authorization": f"Bearer {token}"} if token else {"X-Student-Id": student_id}
+
+
 def evaluate(client, questions: list[dict], top_k: int = 4) -> dict:
     rows = []
     for q in questions:
-        headers = {"X-Student-Id": q["student_id"]} if q.get("student_id") else {}
+        headers = student_headers(client, q.get("student_id"))
         started = time.perf_counter()
         r = client.post("/ask", json={"question": q["question"], "as_of_date": q["as_of_date"]}, headers=headers)
         wall = (time.perf_counter() - started) * 1000

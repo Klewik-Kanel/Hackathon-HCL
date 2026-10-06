@@ -96,6 +96,15 @@ CREATE TABLE IF NOT EXISTS attendance_relaxations (
     count_used INTEGER NOT NULL DEFAULT 0
 );
 
+-- Student passwords: salted PBKDF2 hashes only (app/auth.py). A student
+-- with no row here still uses the demo starting password.
+CREATE TABLE IF NOT EXISTS student_credentials (
+    student_id TEXT PRIMARY KEY REFERENCES students(student_id),
+    salt       TEXT NOT NULL,
+    pw_hash    TEXT NOT NULL,
+    updated_at TEXT NOT NULL
+);
+
 CREATE TABLE IF NOT EXISTS audit_log (
     trace_id   TEXT PRIMARY KEY,
     created_at TEXT NOT NULL,

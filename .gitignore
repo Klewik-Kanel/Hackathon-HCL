@@ -24,3 +24,4 @@ eval/report.json
 # Team hand-off folders (never committed)
 _team/
 _preview/
+data/.auth_secret
