@@ -18,3 +18,9 @@ venv/
 # Runtime data (rebuilt by scripts; documents and CSVs stay tracked)
 data/chroma/
 data/*.db
+data/docs/uploads/
+eval/report.json
+
+# Team hand-off folders (never committed)
+_team/
+_preview/
