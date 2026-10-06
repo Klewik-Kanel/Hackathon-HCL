@@ -188,7 +188,7 @@ def node_retrieve(state: State) -> State:
     winners = {(d["winner"].source_doc_id, d["winner"].source_section) for d in decisions if d["winner"]}
     hits.sort(key=lambda h: ((h.doc_id, h.section) not in winners, -h.score))
     words = _content_words(state["question"])
-    evidence = [_citation_meta(h) for h in hits
+    evidence = [{**_citation_meta(h), "winner": (h.doc_id, h.section) in winners} for h in hits
                 if h.status == "applicable" and h.score >= settings.abstain_threshold
                 and ((h.doc_id, h.section) in winners or _supports(words, h.text))][: settings.evidence_k]
     return {"hits": hits, "evidence": evidence, "rule_decisions": decisions}

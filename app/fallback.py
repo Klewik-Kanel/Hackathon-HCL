@@ -169,13 +169,15 @@ def compose(question: str, evidence: list[dict], tool_results: list[dict], rules
     parts = [_fmt_tool(t["tool"], t["data"]) for t in tool_results if t.get("ok")]
     cited = []
     if evidence:
-        best = max(evidence, key=lambda e: (overlap(question, e["text"]), -evidence.index(e)))
+        # The precedence winner's clause gets a head start: it is the authoritative source.
+        best = max(evidence, key=lambda e: (overlap(question, e["text"]) + (2 if e.get("winner") else 0),
+                                            -evidence.index(e)))
         cited.append(best["id"])
         if not parts:
             text = re.sub(r"\s+", " ", best["text"])
             text = re.sub(r"^[#\s]*[\d.]+\s*", "", text)  # drop the leading clause number
             parts.append(f"According to {best['title']}, clause {best['section']} (page {best['page']}): "
-                         f"\"{text[:320]}\"")
+                         f"\"{text[:500]}\"")
             numeric = [r for r in rules_text if best["doc_id"] in r and f"clause {best['section']}," in r
                        and "(= " not in r]
             if numeric:
