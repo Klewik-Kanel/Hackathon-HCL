@@ -3,7 +3,7 @@
 | Field | Content |
 | --- | --- |
 | **Purpose** | Test students for personal-data, eligibility, what-if and authorisation questions. Must exercise every boundary in the attendance, pass, backlog and CGPA rules. |
-| **Generator** | `scripts/generate_students.py`. Model: Ollama `qwen2.5:7b-instruct`, temperature 0, one call per non-edge student (29 calls, plus retries). The committed CSVs were produced with `--offline` (deterministic stand-in) during the build; **re-run without `--offline` on the demo laptop and update this card with the real counts from `data/students/generation_log.json`.** |
+| **Generator** | `scripts/generate_students.py`. Model: Ollama `qwen2.5:7b-instruct`, temperature 0, one call per non-edge student (29 calls, plus retries). The committed CSVs were produced with `--offline` (deterministic stand-in, 0 LLM calls). To produce the LLM version, run `python scripts/generate_students.py` with Ollama running, then update this card from `data/students/generation_log.json`. |
 | **Prompts** | `prompts/student_gen_v1.txt` (verbatim, with the course lists and profile filled in per student) |
 | **Schema enforcement** | Pydantic model `GenStudent` on every reply; invalid JSON is retried once with the error shown to the model; then the validator `scripts/validate_data.py` checks the CSVs. |
 | **Row counts** | 40 students (20 B.Tech CSE, 20 B.Tech ECE; batches 2023 and 2024), 12 courses (6 per programme), 80 attendance rows, 110 result rows |
